@@ -25,3 +25,42 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           configuration-path: ".github/labeler.yml"
           sync-labels: true # Ensures non-matching labels are removed
+# Configuration file for actions/labeler
+# Defines labels to apply based on modified file paths in pull requests
+
+# Label "frontend" for changes in frontend-related files
+frontend:
+  - src/frontend/**
+  - src/components/**
+  - src/views/**
+  - "*.html"
+  - "*.css"
+  - "*.js"
+
+# Label "backend" for changes in backend-related files
+backend:
+  - src/backend/**
+  - src/api/**
+  - src/services/**
+  - "*.py"
+  - "*.java"
+  - "*.go"
+
+# Label "docs" for changes in documentation
+docs:
+  - docs/**
+  - README.md
+  - "*.md"
+
+# Label "tests" for changes in test files
+tests:
+  - tests/**
+  - test/**
+  - "*.test.js"
+  - "*.spec.js"
+  - "*.test.py"
+
+# Label "ci" for changes in CI/CD configuration
+ci:
+  - .github/workflows/**
+  - ".gitlab-ci.yml"
