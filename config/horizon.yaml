@@ -1,0 +1,15 @@
+# horizon.yaml
+port: 8000
+bind: "0.0.0.0"
+database:
+  type: "postgres"
+  url: "postgresql://dbname=pi_mainnet user=pi password=secure_password host=localhost"
+stellar_core_url: "http://localhost:11626"
+history_archive_urls:
+  - "https://history.pi-mainnet.org"
+ingest: true
+per_hour_rate_limit: 3600
+network_passphrase: "Pi Network Ultra Mainnet"
+log_level: "info"
+redis:
+  url: "redis://localhost:6379"

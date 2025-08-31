@@ -1,0 +1,78 @@
+{
+  "node": {
+    "name": "PiSuperNode",
+    "version": "1.0.0",
+    "network": "pi-mainnet",
+    "rpc": {
+      "enabled": true,
+      "host": "0.0.0.0",
+      "port": 8080,
+      "username": "your_rpc_username",
+      "password": "your_rpc_password",
+      "cors": ["http://localhost:3000"],
+      "timeout": 30000
+    },
+    "p2p": {
+      "port": 30303,
+      "maxPeers": 100,
+      "discovery": {
+        "enabled": true,
+        "bootstrapNodes": [
+          "enode://node1@ip1:port1",
+          "enode://node2@ip2:port2"
+        ]
+      }
+    },
+    "logging": {
+      "level": "info",
+      "file": "logs/pi_supernode.log",
+      "maxSize": "10m",
+      "maxFiles": "5"
+    },
+    "security": {
+      "enableFirewall": true,
+      "allowedIPs": [
+        "192.168.1.0/24",
+        "your.trusted.ip.address"
+      ],
+      "blocklist": [
+        "malicious.ip.address"
+      ]
+    },
+    "performance": {
+      "maxConnections": 100,
+      "enableCaching": true,
+      "cacheSize": "512MB",
+      "enableCompression": true
+    },
+    "database": {
+      "type": "leveldb",
+      "path": "./data",
+      "backup": {
+        "enabled": true,
+        "interval": "24h"
+      }
+    },
+    "api": {
+      "enabled": true,
+      "basePath": "/api/v1",
+      "rateLimit": {
+        "enabled": true,
+        "maxRequests": 100,
+        "windowMs": 60000
+      }
+    },
+    "consensus": {
+      "type": "DelegatedProofOfStake",
+      "blockTime": 10,
+      "validators": {
+        "minValidators": 3,
+        "maxValidators": 50,
+        "validatorReward": {
+          "enabled": true,
+          "percentage": 5
+        }
+      }
+    }
+  }
+}

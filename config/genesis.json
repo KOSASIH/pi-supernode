@@ -1,0 +1,129 @@
+{
+  "ledger": {
+    "number": 0,
+    "timestamp": "2025-05-18T21:07:00Z",
+    "version": "2.0.0",
+    "networkId": "pi-mainnet-ultra",
+    "chain": "PiQuantumLedger"
+  },
+  "initialAccounts": {
+    "GPIFOUNDATIONRESERVE": {
+      "balance": "1000000000000000000",
+      "lockedUntil": "2030-05-18T21:07:00Z",
+      "signers": [
+        { "publicKey": "GPIFOUNDATIONMULTISIG1", "weight": 1 },
+        { "publicKey": "GPIFOUNDATIONMULTISIG2", "weight": 1 }
+      ],
+      "thresholds": { "low": 1, "medium": 2, "high": 2 },
+      "flags": { "authRequired": true, "authRevocable": true }
+    },
+    "GPIECOSYSTEMFUND": {
+      "balance": "500000000000000000",
+      "signers": [{ "publicKey": "GPIECOSYSTEMSIGNER", "weight": 1 }],
+      "thresholds": { "low": 1, "medium": 1, "high": 1 }
+    },
+    "GPICOMMUNITYPOOL": {
+      "balance": "250000000000000000",
+      "lockedUntil": "2026-05-18T21:07:00Z",
+      "flags": { "authImmutable": true }
+    }
+  },
+  "initialAssets": {
+    "PINATIVE": {
+      "type": "native",
+      "totalSupply": "1000000000000000000",
+      "issuer": "GPIFOUNDATIONRESERVE",
+      "displaySymbol": "Pi",
+      "trustlines": [
+        { "account": "GPIECOSYSTEMFUND", "limit": "500000000000000000" },
+        { "account": "GPICOMMUNITYPOOL", "limit": "250000000000000000" }
+      ]
+    },
+    "PIGOVERNANCE": {
+      "type": "credit",
+      "code": "PIGOV",
+      "issuer": "GPIFOUNDATIONRESERVE",
+      "totalSupply": "1000000000000000",
+      "displaySymbol": "PIGOV",
+      "trustlines": [
+        { "account": "GPICOMMUNITYPOOL", "limit": "500000000000000" }
+      ],
+      "flags": { "authRequired": true, "authRevocable": true }
+    },
+    "PIUSD": {
+      "type": "credit",
+      "code": "PIUSD",
+      "issuer": "GPIFOUNDATIONRESERVE",
+      "totalSupply": "1000000000000000",
+      "displaySymbol": "PIUSD",
+      "peggedTo": "USD",
+      "trustlines": []
+    }
+  },
+  "validators": {
+    "initialQuorumSet": {
+      "threshold": 0.75,
+      "validators": [
+        "GVALIDATOR1",
+        "GVALIDATOR2",
+        "GVALIDATOR3",
+        "GVALIDATOR4",
+        "GVALIDATOR5"
+      ],
+      "innerQuorumSets": []
+    },
+    "aiOptimizer": {
+      "enabled": true,
+      "model": "QuantumNeuralValidatorSelector",
+      "initialTrustScores": {
+        "GVALIDATOR1": 0.95,
+        "GVALIDATOR2": 0.90,
+        "GVALIDATOR3": 0.92,
+        "GVALIDATOR4": 0.89,
+        "GVALIDATOR5": 0.93
+      }
+    }
+  },
+  "protocol": {
+    "baseFee": "0.00001",
+    "maxOperationsPerLedger": 100000,
+    "ledgerVersion": 20,
+    "sharding": {
+      "enabled": true,
+      "shards": 16,
+      "initialShardKeys": [
+        "shard0",
+        "shard1"
+      ]
+    },
+    "quantumResistance": {
+      "enabled": true,
+      "algorithm": "XMSS"
+    },
+    "zeroKnowledgeProofs": {
+      "enabled": true,
+      "type": "zkSNARK"
+    }
+  },
+  "interoperability": {
+    "bridges": [
+      {
+        "chain": "Ethereum",
+        "contract": "0xEthBridgeContract",
+        "initialBalance": "1000000000000000"
+      },
+      {
+        "chain": "Solana",
+        "programId": "SolanaBridgeProgramId",
+        "initialBalance": "1000000000000000"
+      }
+    ]
+  },
+  "governance": {
+    "enabled": true,
+    "votingToken": "PIGOVERNANCE",
+    "proposalThreshold": "1000000000000",
+    "votingPeriod": "7d",
+    "initialProposals": []
+  }
+    }

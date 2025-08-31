@@ -1,151 +1,242 @@
-// Import required packages
-const express = require('express');
-const bodyParser = require('body-parser');
-const StellarSdk = require('stellar-sdk');
-const dotenv = require('dotenv');
-const routes = require('./routes'); // Import routes
-const morgan = require('morgan'); // HTTP request logger middleware
-const rateLimit = require('express-rate-limit'); // Rate limiting middleware
-const cors = require('cors'); // CORS middleware
-const SupplyManager = require('./supplyManager'); // Import SupplyManager
-const OracleIntegration = require('./oracleIntegration'); // Import OracleIntegration
-const BroadcastSync = require('./broadcastSync'); // Import BroadcastSync
-const PartnerAPI = require('./partnerApi'); // Import PartnerAPI
-const ComplianceMonitor = require('./complianceMonitor'); // Import ComplianceMonitor
-const QuantumSecurity = require('./quantumSecurity'); // Import QuantumSecurity
-const ThreatDetection = require('./threatDetection'); // Import ThreatDetection
-const MultiSigWallet = require('./multiSigWallet'); // Import MultiSigWallet
+// src/index.js
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import promClient from 'prom-client';
+import { StellarSdk } from 'stellar-sdk';
+import { config } from 'dotenv';
+import { loggerInstance as logger } from './utils/logger.js';
+import routes from './routes/index.js';
+import SupplyManager from './supplyManager.js';
+import OracleIntegration from './oracleIntegration.js';
+import BroadcastSync from './broadcastSync.js';
+import PartnerAPI from './partnerApi.js';
+import ComplianceMonitor from './complianceMonitor.js';
+import QuantumSecurity from './security/quantumCrypto.js';
+import ThreatDetection from './threatDetection.js';
+import MultiSigWallet from './multiSigWallet.js';
+import ValidatorManager from './validators.js';
+import CrossChainBridge from './interoperability/bridge.js';
 
-// Load environment variables from .env file
-dotenv.config();
+// Load environment variables
+config();
 
 // Validate required environment variables
-const requiredEnvVars = ['STELLAR_HORIZON_URL', 'PI_COIN_ASSET_CODE', 'PI_COIN_ISSUER', 'TOKEN_CONTRACT_ADDRESS', 'PRICE_FEED_ADDRESS'];
+const requiredEnvVars = [
+  'STELLAR_HORIZON_URL',
+  'PI_COIN_ASSET_CODE',
+  'PI_COIN_ISSUER',
+  'TOKEN_CONTRACT_ADDRESS',
+  'PRICE_FEED_ADDRESS',
+  'NODE_ID',
+  'AWS_REGION',
+  'PI_COIN_DISPLAY_SYMBOL',
+];
 requiredEnvVars.forEach((varName) => {
-    if (!process.env[varName]) {
-        throw new Error(`Environment variable ${varName} is required.`);
-    }
+  if (!process.env[varName]) {
+    logger.error(`Environment variable ${varName} is required`, { context: 'startup' });
+    process.exit(1);
+  }
 });
 
 // Initialize Express app
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
-// Middleware
-app.use(bodyParser.json());
-app.use(cors()); // Enable CORS
-app.use(morgan('combined')); // Log HTTP requests
+// Prometheus metrics
+const httpRequestCounter = new promClient.Counter({
+  name: 'pi_supernode_http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status'],
+});
+promClient.collectDefaultMetrics({ prefix: 'pi_supernode_' });
 
 // Configure Stellar SDK
-StellarSdk.Network.useTestNetwork(); // Use Test Network
-const server = new StellarSdk.Server(process.env.STELLAR_HORIZON_URL); // Stellar Horizon URL
+const isTestnet = process.env.NODE_ENV !== 'production';
+StellarSdk.Networks.use(isTestnet ? StellarSdk.Networks.TESTNET : StellarSdk.Networks.PUBLIC);
+const stellarServer = new StellarSdk.Horizon.Server(process.env.STELLAR_HORIZON_URL, {
+  allowHttp: isTestnet,
+});
 
 // Pi Coin configuration
 const piCoinAsset = new StellarSdk.Asset(
-    process.env.PI_COIN_ASSET_CODE,
-    process.env.PI_COIN_ISSUER
+  process.env.PI_COIN_ASSET_CODE,
+  process.env.PI_COIN_ISSUER,
 );
+const piCoinDisplaySymbol = process.env.PI_COIN_DISPLAY_SYMBOL || 'Pi';
 
-// Initialize SupplyManager and OracleIntegration
+// Initialize core components
 const supplyManager = new SupplyManager(process.env.TOKEN_CONTRACT_ADDRESS);
 const oracleIntegration = new OracleIntegration(process.env.PRICE_FEED_ADDRESS);
-
-// Initialize BroadcastSync and PartnerAPI
-const broadcastSync = new BroadcastSync(8080); // WebSocket server for broadcasting
-const partnerAPI = new PartnerAPI(3000, broadcastSync); // API for partners
-
-// Initialize ComplianceMonitor
+const broadcastSync = new BroadcastSync(8080);
+const partnerAPI = new PartnerAPI(3000, broadcastSync);
 const complianceMonitor = new ComplianceMonitor(0.05, () => {
-    console.log('Penalty applied for non-compliance!');
+  logger.warn('Penalty applied for non-compliance', { context: 'compliance' });
 });
-
-// Initialize Quantum Security, Threat Detection, and Multi-Sig Wallet
-const quantumSecurity = new QuantumSecurity();
+const quantumSecurity = QuantumSecurity;
 const threatDetection = new ThreatDetection();
-const multiSigWallet = new MultiSigWallet(['0xSigner1', '0xSigner2'], 2); // Example signers and required signatures
+const multiSigWallet = new MultiSigWallet(
+  [process.env.SIGNER_1 || 'GSigner1', process.env.SIGNER_2 || 'GSigner2'],
+  2,
+);
+const validatorManager = ValidatorManager;
+const crossChainBridge = CrossChainBridge;
 
-// Middleware to attach Stellar server and Pi Coin asset to the request
-app.use((req, res, next) => {
-    req.stellarServer = server;
-    req.piCoinAsset = piCoinAsset;
-    req.supplyManager = supplyManager;
-    req.oracleIntegration = oracleIntegration;
-    req.broadcastSync = broadcastSync; // Attach broadcast sync
-    req.complianceMonitor = complianceMonitor; // Attach compliance monitor
-    req.quantumSecurity = quantumSecurity; // Attach quantum security
-    req.threatDetection = threatDetection; // Attach threat detection
-    req.multiSigWallet = multiSigWallet; // Attach multi-sig wallet
-    next();
-});
+// Middleware
+app.use(helmet());
+app.use(cors({ origin: process.env.CORS_ORIGINS?.split(',') || '*' }));
+app.use(morgan('combined', { stream: { write: (msg) => logger.info(msg.trim(), { context: 'http' }) } }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting middleware
+// Rate limiting
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  message: { error: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
-app.use('/api/', apiLimiter); // Apply to all API routes
+app.use('/api/', apiLimiter);
+
+// Attach core components to request
+app.use((req, res, next) => {
+  req.stellarServer = stellarServer;
+  req.piCoinAsset = piCoinAsset;
+  req.piCoinDisplaySymbol = piCoinDisplaySymbol;
+  req.supplyManager = supplyManager;
+  req.oracleIntegration = oracleIntegration;
+  req.broadcastSync = broadcastSync;
+  req.complianceMonitor = complianceMonitor;
+  req.quantumSecurity = quantumSecurity;
+  req.threatDetection = threatDetection;
+  req.multiSigWallet = multiSigWallet;
+  req.validatorManager = validatorManager;
+  req.crossChainBridge = crossChainBridge;
+  next();
+});
+
+// Prometheus metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', promClient.register.contentType);
+    res.end(await promClient.register.metrics());
+  } catch (error) {
+    logger.error(`Metrics endpoint failed: ${error.message}`, { context: 'metrics' });
+    res.status(500).json({ error: 'Failed to retrieve metrics' });
+  }
+});
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'UP' });
+app.get('/health', async (req, res) => {
+  try {
+    await stellarServer.serverInfo();
+    await redis.ping();
+    res.status(200).json({
+      status: 'UP',
+      components: {
+        stellar: 'OK',
+        redis: 'OK',
+        validatorManager: 'OK',
+      },
+      nodeId: process.env.NODE_ID,
+      piCoin: { code: process.env.PI_COIN_ASSET_CODE, symbol: piCoinDisplaySymbol },
+    });
+  } catch (error) {
+    logger.error(`Health check failed: ${error.message}`, { context: 'health' });
+    res.status(503).json({ status: 'DOWN', error: error.message });
+  }
 });
 
-// Define the total supply of Pi Coin
-const TOTAL_SUPPLY = 100000000000; // Set total supply to 100 billion
+// Total supply configuration
+const TOTAL_SUPPLY = 100_000_000_000 * 10 ** 7; // 100 billion lumens (in stroops)
 
-// Function to monitor price and adjust supply
+// Monitor price and adjust supply
 async function monitorPriceAndAdjustSupply() {
-    try {
-        // Get the latest price from the oracle
-        const currentPrice = await oracleIntegration.getLatestPrice();
-        console.log(`Current Price of Pi Coin: $${currentPrice}`);
+  try {
+    const currentPrice = await oracleIntegration.getLatestPrice();
+    logger.info(`Current ${piCoinDisplaySymbol} price: $${currentPrice}`, { context: 'price_monitor' });
 
-        // Implement your dynamic pegging logic here
-        const targetPrice = 314159.00; // Example target price
-        const priceDeviation = ((currentPrice - targetPrice)/ targetPrice);
+    const targetPrice = 314159.0;
+    const priceDeviation = (currentPrice - targetPrice) / targetPrice;
 
-        // Determine the amount to mint or burn based on price deviation
-        const adjustmentAmount = calculateAdjustmentAmount(priceDeviation);
+    const adjustmentAmount = calculateAdjustmentAmount(priceDeviation);
+    const account = process.env.SUPPLY_MANAGER_ADDRESS;
 
-        if (priceDeviation > 0) {
-            // Price is above target, burn tokens
-            await supplyManager.burnTokens(process.env.SUPPLY_MANAGER_ADDRESS, adjustmentAmount);
-        } else if (priceDeviation < 0) {
-            // Price is below target, mint tokens
-            await supplyManager.mintTokens(process.env.SUPPLY_MANAGER_ADDRESS, adjustmentAmount);
-        } else {
-            console.log("No significant price deviation detected. No action taken.");
-        }
-
-        // Broadcast the updated value and total supply
-        broadcastSync.updateValue(currentPrice, TOTAL_SUPPLY); // Use the defined TOTAL_SUPPLY
-
-        // Update compliance monitor with the current price
-        complianceMonitor.updateValue(currentPrice);
-    } catch (error) {
-        console.error("Error in monitoring price and adjusting supply:", error);
+    if (Math.abs(priceDeviation) > 0.01) {
+      if (priceDeviation > 0) {
+        await supplyManager.burnTokens(account, adjustmentAmount);
+        logger.audit('burn_tokens', { amount: adjustmentAmount, account, symbol: piCoinDisplaySymbol }, { context: 'supply' });
+      } else {
+        await supplyManager.mintTokens(account, adjustmentAmount);
+        logger.audit('mint_tokens', { amount: adjustmentAmount, account, symbol: piCoinDisplaySymbol }, { context: 'supply' });
+      }
+    } else {
+      logger.info(`No significant price deviation detected for ${piCoinDisplaySymbol}`, { context: 'price_monitor' });
     }
+
+    broadcastSync.updateValue(currentPrice, TOTAL_SUPPLY);
+    complianceMonitor.updateValue(currentPrice);
+  } catch (error) {
+    logger.error(`Price monitoring failed: ${error.message}`, { context: 'price_monitor' });
+  }
 }
 
-// Function to calculate the adjustment amount based on price deviation
+// Calculate adjustment amount
 function calculateAdjustmentAmount(priceDeviation) {
-    const baseAdjustment = 1000; // Base adjustment amount
-    return Math.floor(baseAdjustment * Math.abs(priceDeviation)); // Adjust based on deviation
+  const baseAdjustment = 1_000_000 * 10 ** 7;
+  return Math.floor(baseAdjustment * Math.abs(priceDeviation));
 }
 
-// Set an interval to monitor the price every minute
-setInterval(monitorPriceAndAdjustSupply, 60000);
+// Initialize validator quorum
+async function initializeValidatorQuorum() {
+  try {
+    const quorumSet = await validatorManager.updateQuorumSet();
+    logger.info(`Initialized quorum set with ${quorumSet.validators.length} validators`, {
+      context: 'validator',
+    });
+    logger.audit('quorum_initialized', { validators: quorumSet.validators }, { context: 'validator' });
+  } catch (error) {
+    logger.error(`Validator quorum initialization failed: ${error.message}`, { context: 'validator' });
+  }
+}
 
-// Use the routes
-app.use('/api', routes); // Prefix all routes with /api
+// Start periodic tasks
+setInterval(monitorPriceAndAdjustSupply, 60_000);
+setImmediate(initializeValidatorQuorum);
+
+// API routes
+app.use('/api', routes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
+  logger.error(`Unhandled error: ${err.message}`, { context: 'error', stack: err.stack });
+  res.status(andersson).json({ error: 'Internal server error' });
 });
 
-// Start the server
+// Request metrics middleware
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.route?.path || req.path,
+      status: res.statusCode,
+    });
+  });
+  next();
+});
+
+// Start server
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+  logger.info(`Supernode server running on http://localhost:${port}`, { context: 'startup' });
+  logger.audit('server_started', { port, nodeId: process.env.NODE_ID, piCoinSymbol: piCoinDisplaySymbol }, { context: 'startup' });
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  logger.info('Received SIGTERM, shutting down', { context: 'shutdown' });
+  await new Promise((resolve) => app.close(resolve));
+  process.exit(0);
 });
