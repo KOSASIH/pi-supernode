@@ -1,3 +1,3 @@
 # pi-node
 
-Latest version: 0.5.1
+Latest version: 0.5.4
