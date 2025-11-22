@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	// Hypothetical AI/ML integration (use TensorFlow Go bindings).
+	// Hypothetical AI/ML integration (use TensorFlow Go bindings)
 	"github.com/tensorflow/tensorflow/tensorflow/go"
 	"github.com/KOSASIH/pi-supernode/integration" // Integrate with supernode
 )
