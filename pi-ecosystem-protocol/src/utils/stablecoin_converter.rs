@@ -3,7 +3,7 @@ use tokio::sync::Mutex;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-// Hypothetical AI/ML integration (simulate with simple models).
+// Hypothetical AI/ML integration (simulate with simple models)
 #[derive(Clone)]
 struct AIConverter {
     model: HashMap<String, f32>, // Simulated neural network for conversion rates
