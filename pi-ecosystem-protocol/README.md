@@ -33,7 +33,7 @@ Imagine a world where **only stablecoins rule** – no more crypto rollercoaster
 - **Scripts for Days**: Deploy and CI/CD with AI magic.
 
 ## Architecture Diagram – See the Magic! 🪄
-![Architecture](architecture_diagram.svg)
+![Architecture](docs/architecture_diagram.svg)
 
 - **Core**: The brain – enforcers, issuers, validators.
 - **AI/ML**: The fun part – predictors, learners, simulators.
