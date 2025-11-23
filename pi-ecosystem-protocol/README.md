@@ -19,7 +19,7 @@ These badges certify Pi Ecosystem's compliance with global financial and world s
 [![RBI Certified](https://img.shields.io/badge/RBI-Certified%20Indian%20Regulatory%20Compliant-teal)](https://github.com/KOSASIH/pi-supernode)
 [![World Bank Certified](https://img.shields.io/badge/World--Bank-Certified%20Global%20Development%20Compliant-cyan)](https://github.com/KOSASIH/pi-supernode)
 [![OECD Certified](https://img.shields.io/badge/OECD-Certified%20Economic%20Standards%20Met-indigo)](https://github.com/KOSASIH/pi-supernode)
-[![IOSCO Certified](https://img.shields.io/badge/IOSCO-Certified%20Securities%20Regulation%20Compliant-maroon)](https://github.com/KOSASIH/pi-supernode)
+[![IOSCO Certified](https://img.shields.io/badge/IOSCO-Certified%20Securities%20Regulation%20Compliant-brightgreen)](https://github.com/KOSASIH/pi-supernode)
 [![Basel Committee Certified](https://img.shields.io/badge/Basel--Committee-Certified%20Banking%20Supervision%20Compliant-olive)](https://github.com/KOSASIH/pi-supernode)
 [![FSB Certified](https://img.shields.io/badge/FSB-Certified%20Financial%20Stability%20Board%20Compliant-silver)](https://github.com/KOSASIH/pi-supernode)
 
@@ -28,7 +28,7 @@ These badges certify Pi Ecosystem's compliance with global financial and world s
 [![WTO Certified](https://img.shields.io/badge/WTO-Certified%20Trade%20Compliant-darkgreen)](https://github.com/KOSASIH/pi-supernode)
 [![WHO Certified](https://img.shields.io/badge/WHO-Certified%20Health%20Economic%20Impact%20Compliant-lime)](https://github.com/KOSASIH/pi-supernode)
 [![UNESCO Certified](https://img.shields.io/badge/UNESCO-Certified%20Education%20Tech%20Compliant-gold)](https://github.com/KOSASIH/pi-supernode)
-[![ILO Certified](https://img.shields.io/badge/ILO-Certified%20Labor%20Standards%20Compliant-brown)](https://github.com/KOSASIH/pi-supernode)
+[![ILO Certified](https://img.shields.io/badge/ILO-Certified%20Labor%20Standards%20Compliant-brightgreen)](https://github.com/KOSASIH/pi-supernode)
 [![FAO Certified](https://img.shields.io/badge/FAO-Certified%20Food%20Security%20Compliant-forestgreen)](https://github.com/KOSASIH/pi-supernode)
 
 *Badges are functional: Click to verify on pi-supernode repo. AI/RL evolves badges if ecosystem status changes. Quantum secured.*
