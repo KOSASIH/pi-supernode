@@ -1,4 +1,13 @@
 # Pi Supernode V20.2 - Autonomous AI Guardian Edition
+
+[![Rust](https://img.shields.io/badge/rust-1.75%2B-brightorange.svg)](https://www.rust-lang.org/)
+[![License](https://img.shields.io/badge/license-KSIPL-blue.svg)](https://github.com/KOSASIH/pi-supernode/blob/main/LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/pi-supernode-v20.svg)](https://crates.io/crates/pi-supernode-v20)
+[![Docs](https://img.shields.io/badge/docs-doxygen-yellow.svg)](https://docs.rs/pi-supernode-v20)
+[![AI Guardian](https://img.shields.io/badge/AI%20Guardian-ACTIVE-brightgreen.svg)](https://github.com/KOSASIH/pi-supernode/tree/main/src/ai_guardian)
+
+**Autonomous Threat Detection & Self-Healing** 🧠🛡️
+
 ## KOSASIH Super Intelligence Protection System
 
 **The Ultimate Blockchain Defense Fortress** 🛡️  
