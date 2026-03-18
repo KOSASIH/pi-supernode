@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  pi-supernode:
+    build: .
+    command: pi-supernode --protocol-version 2.0.1
+    ports:
+      - "31400:31400"  # P2P
+      - "31401:31401"  # RPC/Explorer
+      - "9090:9090"    # Prometheus
+    volumes:
+      - pi_data:/app/data
+      - pi_logs:/app/logs
+    environment:
+      - RUST_LOG=info,pi_supernode_v20=debug
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4.0'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:31401/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres:
+    image: postgres:16-alpine
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: pi_v20
+      POSTGRES_USER: pi
+      POSTGRES_PASSWORD: secure_pi_pass_2024
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  pi_data:
+  pi_logs:
+  pg_data:
