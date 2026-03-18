@@ -1,0 +1,32 @@
+[package]
+name = "pi-supernode-v20"
+version = "2.0.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.36", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+hyper = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "uuid"] }
+sea-orm = { version = "0.12", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
+ed25519-dalek = "2.0"
+rand = "0.8"
+hex = "0.4"
+base64 = "0.22"
+reqwest = { version = "0.12", features = ["json"] }
+uuid = { version = "1.7", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+futures = "0.3"
+dashmap = "6.0"
+tokio-stream = "0.1"
+libp2p = { version = "0.53", default-features = false, features = [
+    "tcp", "noise", "yamux", "dns", "websocket", "relay", "kad", "identify"
+] }
