@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  pi-supernode-v20:
+    build: .
+    ports:
+      - "31400:31400/tcp"  # P2P
+      - "31401:31401"      # RPC/Explorer
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PI_WALLET=pi1yourwallet
+      - PI_NODE_KEY=your64bytehexkey
+      - DATABASE_URL=postgres://pi:pi@db:5432/pi_v20
+    depends_on:
+      - db
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: pi_v20
+      POSTGRES_USER: pi
+      POSTGRES_PASSWORD: pi
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
