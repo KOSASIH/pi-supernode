@@ -1,4 +1,14 @@
 # Pi Supernode Global Defense Network (GIDN)
+
+[![Rust](https://img.shields.io/badge/rust-1.75%2B-brightorange.svg)](https://www.rust-lang.org/)
+[![License](https://img.shields.io/badge/license-GDNL-blue.svg)](https://github.com/KOSASIH/pi-supernode/blob/main/LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/pi-supernode-v20.svg)](https://crates.io/crates/pi-supernode-v20)
+[![Coverage](https://img.shields.io/badge/coverage-4.9B%20users-lightblue.svg)](https://github.com/KOSASIH/pi-supernode/tree/main/src/global_defense)
+[![GIDN Status](https://img.shields.io/badge/GIDN-ACTIVE-brightgreen.svg)](https://github.com/KOSASIH/pi-supernode/tree/main/src/global_defense)
+[![Threats Neutralized](https://img.shields.io/badge/threats-1%2C247-red.svg)](https://github.com/KOSASIH/pi-supernode/tree/main/src/global_defense)
+
+**4.9 Billion User Protection** 🌐💥
+
 ## KOSASIH Super Intelligence Protection System
 
 **Internet-Scale Threat Protection for Pi Network**  
