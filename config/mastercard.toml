@@ -1,0 +1,10 @@
+[mastercard]
+api_key = "your_production_api_key"
+merchant_id = "MCH-0000000001"
+signing_key_hex = "your_64_char_hex_key_here"
+sandbox = false
+daily_limit_usd = 100000.0
+
+[security]
+hsm_url = "pkcs11://thales:1234"
+token_ttl_hours = 24
