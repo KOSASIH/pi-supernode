@@ -1,0 +1,14 @@
+[mastercard]
+enabled = true
+api_key = "sandbox_mc_us_1234567890"
+merchant_id = "MCH-0000000001"
+signing_key = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+sandbox = true
+daily_limit_usd = 1000.0
+
+[p2p]
+port = 31400
+bootstrap_peers = ["/ip4/127.0.0.1/tcp/31400/p2p/QmLocalTest"]
+
+[redis]
+url = "redis://localhost:6379"
