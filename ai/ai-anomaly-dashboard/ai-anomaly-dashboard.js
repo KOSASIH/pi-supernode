@@ -97,4 +97,3 @@ fs.writeFileSync(publicDir + '/index.html', `
 </body>
 </html>
 `);
-
