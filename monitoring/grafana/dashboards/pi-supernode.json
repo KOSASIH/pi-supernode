@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "Pi Supernode Dashboard",
+    "panels": [
+      {
+        "title": "TPS & Throughput",
+        "targets": [{"expr": "rate(pi_tps[5m])"}],
+        "type": "timeseries"
+      },
+      {
+        "title": "P2P Peers",
+        "targets": [{"expr": "pi_p2p_peer_count"}],
+        "type": "stat"
+      },
+      {
+        "title": "Transaction Latency",
+        "targets": [{"expr": "histogram_quantile(0.95, rate(pi_tx_latency_ms_bucket[5m]))"}],
+        "type": "timeseries"
+      },
+      {
+        "title": "Error Rate",
+        "targets": [{"expr": "rate(pi_errors_total[5m])"}],
+        "type": "stat"
+      }
+    ]
+  }
+}
