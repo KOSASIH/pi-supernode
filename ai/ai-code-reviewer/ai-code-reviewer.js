@@ -49,3 +49,4 @@ if (!fs.existsSync(WATCH_DIR)) fs.mkdirSync(WATCH_DIR);
 
 console.log(`Watching ${WATCH_DIR} for code changes...`);
 chokidar.watch(WATCH_DIR, { ignored: /(^|[\/\\])\../ }).on('add', processFile).on('change', processFile);
+
