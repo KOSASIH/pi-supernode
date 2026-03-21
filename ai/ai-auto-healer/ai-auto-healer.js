@@ -39,4 +39,3 @@ async function checkAndHeal() {
 
 setInterval(checkAndHeal, CHECK_INTERVAL);
 checkAndHeal();
-
