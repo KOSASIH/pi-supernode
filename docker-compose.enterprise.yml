@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  pi-supernode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${PI_VERSION:-2.1.0}
+    image: ghcr.io/kosasih/pi-supernode-enterprise:${PI_VERSION:-latest}
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+      - "9091:9091"
+      - "8081:8081"
+      - "30001:30001/udp"
+    environment:
+      - NODE_PRIVATE_KEY=${NODE_PRIVATE_KEY}
+    volumes:
+      - supernode-data:/data
+      - supernode-logs:/var/log/supernode
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8081/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  supernode-data:
+  supernode-logs:
