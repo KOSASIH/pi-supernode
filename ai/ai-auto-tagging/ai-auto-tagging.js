@@ -24,4 +24,3 @@ async function tagImage(imagePath) {
 
 console.log(`Watching ${watchDir} for new images...`);
 chokidar.watch(watchDir, { ignored: /(^|[\/\\])\../ }).on('add', tagImage);
-
