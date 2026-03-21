@@ -66,3 +66,4 @@ console.log(`Watching ${WATCH_DIR} for code changes...`);
 chokidar.watch(WATCH_DIR, { ignored: /(^|[\/\\])\../, ignoreInitial: true })
     .on('change', processFile)
     .on('add', processFile);
+
