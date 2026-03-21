@@ -46,4 +46,3 @@ function recordAndDetect() {
 }
 
 recordAndDetect();
-
