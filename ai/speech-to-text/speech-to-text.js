@@ -30,4 +30,3 @@ const recognizeStream = client
 record
   .start({ sampleRateHertz: 16000, threshold: 0, verbose: false, recordProgram: 'arecord', silence: '1.0' })
   .pipe(recognizeStream);
-
