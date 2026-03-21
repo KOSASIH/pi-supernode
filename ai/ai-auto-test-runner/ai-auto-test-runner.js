@@ -59,3 +59,4 @@ chokidar.watch(WATCH_DIR, { ignored: /(^|[\/\\])\../, ignoreInitial: true })
 
 console.log(`Watching ${WATCH_DIR} for code changes...`);
 runTestAndNotify(); // Initial run
+
