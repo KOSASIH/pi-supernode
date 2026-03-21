@@ -53,4 +53,3 @@ async function runSelfTest() {
     console.log('Self-test report sent.\n' + report.join('\n'));
 }
 runSelfTest();
-
