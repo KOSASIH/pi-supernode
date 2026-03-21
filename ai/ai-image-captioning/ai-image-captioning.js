@@ -44,3 +44,4 @@ chokidar.watch(watchDir, { ignored: /(^|[\/\\])\../ }).```
 ## Dependencies:
 ```bash
 npm install node-record-lpcm16 wav axios
+
