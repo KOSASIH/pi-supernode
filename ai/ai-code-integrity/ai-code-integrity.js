@@ -104,3 +104,4 @@ async function checkIntegrity() {
     saveHashes(hashesNew);
 }
 checkIntegrity();
+
