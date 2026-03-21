@@ -86,3 +86,4 @@ async function selfHeal() {
 
 setInterval(selfHeal, CHECK_INTERVAL);
 selfHeal();
+
