@@ -51,4 +51,3 @@ async function monitor() {
 
 setInterval(monitor, POLL_INTERVAL);
 monitor();
-
