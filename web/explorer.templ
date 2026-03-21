@@ -1,0 +1,22 @@
+package web
+
+templ ExplorerPage() {
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        <script src="https://unpkg.com/alpinejs@3.13.5" defer></script>
+        <title>Pi Supernode Explorer</title>
+    </head>
+    <body x-data="{ tps: 0, peers: 0 }">
+        <div hx-get="/api/dashboard" hx-trigger="every 2s" 
+             hx-target="#dashboard" hx-swap="innerHTML">
+            <div id="dashboard">
+                <h1>Pi Supernode</h1>
+                <div>TPS: {tps}</div>
+                <div>Peers: {peers}</div>
+            </div>
+        </div>
+    </body>
+    </html>
+}
