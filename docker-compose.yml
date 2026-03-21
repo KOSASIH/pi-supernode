@@ -1,35 +1,161 @@
+# Production-ready pi-supernode stack
+# Supports Raspberry Pi (ARM) + x86 + Multi-arch
 version: '3.8'
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+    compress: "true"
+
+x-deploy: &default-deploy
+  resources:
+    limits:
+      memory: 1G
+      cpus: '1.0'
+    reservations:
+      memory: 512M
+      cpus: '0.5'
+
 services:
-  pi-supernode-v20:
-    build: .
-    ports:
-      - "31400:31400/tcp"  # P2P
-      - "31401:31401"      # RPC/Explorer
-    volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-    environment:
-      - PI_WALLET=pi1yourwallet
-      - PI_NODE_KEY=your64bytehexkey
-      - DATABASE_URL=postgres://pi:pi@db:5432/pi_v20
-    depends_on:
-      - db
+  # ========================================
+  # Main Supernode Service
+  # ========================================
+  pi-supernode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${PI_VERSION:-latest}
+    image: ghcr.io/kosasih/pi-supernode:${PI_VERSION:-latest}
+    container_name: pi-supernode
     restart: unless-stopped
+    ports:
+      - "8080:8080/tcp"     # HTTP API / Explorer
+      - "30001:30001/udp"   # P2P Discovery
+      - "30001:30001/tcp"   # P2P (TCP fallback)
+      - "31400:31400/tcp"   # Legacy P2P
+      - "31401:31401/tcp"   # Legacy RPC
+    volumes:
+      - supernode_data:/data
+      - ./config:/etc/supernode:ro
+      - supernode_logs:/app/logs
+    environment:
+      # 🚨 SECURITY: Use secrets or env files - NEVER hardcode!
+      - TZ=${TZ:-UTC}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - NODE_KEY_PATH=/data/node.key
+      - P2P_BIND=0.0.0.0:30001
+      - API_BIND=0.0.0.0:8080
+      - DATABASE_URL=postgresql://pi:${POSTGRES_PASSWORD}@db:5432/pi_supernode?sslmode=disable
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/health || wget --no-verbose --tries=1 --spider http://localhost:8080/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - supernode-net
+    logging: *default-logging
+    deploy: *default-deploy
+
+  # ========================================
+  # PostgreSQL Database (Production Config)
+  # ========================================
+  db:
+    image: postgres:16-alpine
+    container_name: pi-supernode-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pi_supernode
+      POSTGRES_USER: pi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports:
+      - "5432:5432"  # Remove in production!
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pi -d pi_supernode"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - supernode-net
+    logging: *default-logging
     deploy:
       resources:
         limits:
-          memory: 4G
-          cpus: '2.0'
+          memory: 512M
+          cpus: '0.5'
 
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: pi_v20
-      POSTGRES_USER: pi
-      POSTGRES_PASSWORD: pi
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # ========================================
+  # Redis (Caching/PubSub) - Optional
+  # ========================================
+  redis:
+    image: redis:7-alpine
+    container_name: pi-supernode-redis
     restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - supernode-net
+    logging: *default-logging
 
+  # ========================================
+  # Traefik Reverse Proxy (Optional Production)
+  # ========================================
+  traefik:
+    image: traefik:v3.0
+    container_name: pi-supernode-traefik
+    restart: unless-stopped
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8081:8080"  # Traefik Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - supernode-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.supernode.rule=Host(`supernode.local`)"
+      - "traefik.http.routers.supernode.entrypoints=web"
+      - "traefik.http.services.supernode.loadbalancer.server.port=8080"
+
+# ========================================
+# Volumes (Named & Persistent)
+# ========================================
 volumes:
+  supernode_data:
+    driver: local
   postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  supernode_logs:
+    driver: local
+
+# ========================================
+# Networks
+# ========================================
+networks:
+  supernode-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
