@@ -1,34 +1,216 @@
-# Git
-.git
-.github
-
-# Dependencies
-node_modules
-vendor
-
-# Secrets
-.env
+# ========================================
+# 🔐 CRITICAL SECURITY (Never in Docker)
+# ========================================
+.env*
+.env.backup
+.env.local
+.env.prod
+.env.test
 *.key
-secrets
+*.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+*.jks
+secrets/
+keystore/
+wallet/
+config.private.yaml
+config.private.toml
+config.private.json
+docker-compose.override.yml
+docker-compose.prod.yml
 
-# Docs
+# ========================================
+# 📦 BUILD ARTIFACTS & CACHE
+# ========================================
+vendor/
+node_modules/
+dist/
+build/
+out/
+target/
+bin/
+release/
+coverage/
+.nyc_output
+.coverage/
+*.prof
+*.test
+*.out
+go.work
+go.work.buildlist
+
+# ========================================
+# 🧪 TESTING & COVERAGE
+# ========================================
+tests/
+testdata/
+*_test.go
+*.test
+test-results/
+junit.xml
+coverage.*
+lcov.info
+
+# ========================================
+# 📚 DOCUMENTATION & README
+# ========================================
 README*.md
+*.md
+*.rst
+*.txt
+docs/
+doc/
+examples/
+samples/
+
+# ========================================
+# 📄 LICENSES & LEGAL
+# ========================================
 LICENSE*
-docs
+COPYING*
+NOTICE*
+AUTHORS*
 
-# Builds
-dist
-build
-
-# Logs & Temp
-logs
-*.log
-tmp
-temp
-
-# IDE
+# ========================================
+# 🛠️ DEVELOPMENT TOOLS
+# ========================================
+.git
+.github/workflows
+.github/ISSUE_TEMPLATE
+.github/PULL_REQUEST_TEMPLATE
 .vscode
 .idea
-
-# OS
+*.swp
+*.swo
+*~
 .DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+
+# ========================================
+# 🔧 IDE & EDITOR FILES
+# ========================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/*
+!.idea/runConfigurations/
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+
+# ========================================
+# 📊 LOGS & TEMP FILES
+# ========================================
+logs/
+*.log
+*.tmp
+*.temp
+tmp/
+temp/
+.cache/
+.pnp
+.pnp.js
+
+# ========================================
+# 📦 NPM/YARN/PIP
+# ========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+__pycache__/
+*.egg-info/
+dist/
+build/
+.env
+.pytest_cache/
+.coverage
+htmlcov/
+.nyc_output
+
+# ========================================
+# 🐳 DOCKER ARTIFACTS
+# ========================================
+.dockerignore
+Dockerfile*
+docker-compose*
+.docker/
+.gitignore
+README-docker.md
+
+# ========================================
+# 🔍 CI/CD & COVERAGE
+# ========================================
+coverage/
+.nyc_output
+.coverage
+test-results/
+junit.xml
+codecov.yml
+.cirrus-ci/
+
+# ========================================
+# 💾 OS & MAC SPECIFIC
+# ========================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+$RECYCLE.BIN/
+System Volume Information/
+Desktop.ini
+
+# IDE Temp
+.vscode-test
+
+# ========================================
+# 📱 MOBILE/EMULATOR
+# ========================================
+*.apk
+*.aab
+*.ipa
+*.app
+
+# ========================================
+# 🎮 GAME ENGINES
+# ========================================
+[Ll]ibrary/
+[Ll]ogs/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+
+# ========================================
+# 🔒 PI-SUPERNODE SPECIFIC
+# ========================================
+data/
+node.key
+pi-supernode.db*
+*.db-shm
+*.db-wal
+zk-cache/
+p2p/
+.peers.json
+.blockchain/
+contracts/
+# Keep essential configs
+!config/supernode.yaml
+!config/supernode.toml
