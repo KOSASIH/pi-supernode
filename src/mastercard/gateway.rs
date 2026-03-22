@@ -81,4 +81,3 @@ struct OAuthResponse {
     token_type: String,
     expires_in: u64,
 }
-
