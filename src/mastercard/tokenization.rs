@@ -269,4 +269,3 @@ mod tests {
         assert!(!token_resp.token.is_empty());
     }
 }
-
