@@ -21,4 +21,3 @@ pub struct ThreeDSRequest {
     pub messageVersion: String,
     pub messageType: String,
 }
-
