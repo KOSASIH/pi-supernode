@@ -1,12 +1,12 @@
 [package]
-name = "pi-supernode-v20"
-version = "2.0.1"
-authors = ["KOSASIH"]
+name = "pi-supernode-v25"                    # ← v25 branding
+version = "25.0.0-alpha.1"                   # ← v25 versioning
+authors = ["KOSASIH <kosasihg88@gmail.com>"]
 edition = "2021"
-description = "Pi Network Supernode V20 - KOSASIH Production Edition"
+description = "Pi Network Supernode V25 - Quantum Consensus Edition"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/KOSASIH/pi-supernode"
-keywords = ["blockchain", "p2p", "pi-network", "v20", "supernode"]
+keywords = ["blockchain", "p2p", "pi-network", "v25", "quantum", "supernode", "sharding"]
 categories = ["cryptography::cryptocurrencies", "network-programming"]
 
 # Metadata untuk crates.io
@@ -14,12 +14,13 @@ categories = ["cryptography::cryptocurrencies", "network-programming"]
 all-features = true
 rust-version = "1.75"
 
+# V25 CORE DEPENDENCIES - QUANTUM READY
 [dependencies]
 # Async Runtime - Production Stable
 tokio = { version = "1.36", features = ["full", "tracing", "time"] }
 async-trait = "0.1"
 
-# HTTP & RPC - Axum V2 (Better than tower/hyper)
+# HTTP & RPC - Axum V2
 axum = "0.7"
 tower = "0.4"
 tower-http = { version = "0.5", features = ["cors", "trace", "fs", "compression"] }
@@ -59,7 +60,7 @@ sea-orm-migration = "0.12"
 bb8 = "0.8"
 mobc = "0.8"
 
-# Cryptography - V20 Ed25519 + Keccak
+# V20 Crypto (BASE) + V25 QUANTUM CRYPTO
 ed25519-dalek = { version = "2.0", features = ["serde"] }
 sha3 = "0.10"
 blake3 = "1.5"
@@ -70,25 +71,38 @@ base64 = "0.22"
 bs58 = "0.5"
 bech32 = "0.10"
 
-# Networking - Full P2P V20
+# 🔥 V25 QUANTUM CRYPTO (NEW!)
+pqcrypto-kyber1024 = "0.2"           # Kyber post-quantum KEM
+pqcrypto-dilithium5 = "0.2"          # Dilithium post-quantum signatures  
+pqcrypto-falcon1024 = "0.2"          # Falcon (backup)
+ark-groth16 = "0.5"                  # ZK-SNARKs
+ark-ff = "0.4"                       # Finite fields
+ark-bn254 = "0.4"                    # BN254 pairing
+ark-serialize = "0.4"
+
+# Networking - Full P2P V25
 reqwest = { version = "0.12", features = ["json", "rustls-tls", "gzip"] }
 futures = "0.3"
 tokio-stream = "0.1"
 tokio-util = "0.7"
 async-stream = "0.3"
 
-# P2P - Complete libp2p V20
+# P2P - libp2p V25 (SHARDED!)
 libp2p = { 
     version = "0.53", 
     default-features = false, 
     features = [
         "tcp", "quic", "dns", "websocket", "noise", "yamux", "mplex",
         "relay", "kad", "identify", "ping", "request-response",
-        "gossipsub", "mdns"
+        "gossipsub", "mdns", "kademlia"
     ] 
 }
-libp2p-quic = "0.53"
-libp2p-websocket = "0.53"
+
+# V25 AI VALIDATION (NEW!)
+tch = "0.14"                         # PyTorch Rust bindings
+candle-core = "0.3"                  # Alternative ML
+candle-nn = "0.3"
+ndarray = "0.15"
 
 # Data Structures - Production
 dashmap = "6.0"
@@ -107,17 +121,17 @@ prometheus = "0.13"
 metrics = "0.22"
 metrics-exporter-prometheus = "0.12"
 
-# JSON RPC V20
+# JSON RPC V25
 jsonrpsee = { version = "0.20", features = ["server", "macros"] }
 
-# Bridge Dependencies (Ethereum/Solana)
+# Bridge Dependencies
 ethers = "2.0"
 alloy = "0.1"
 solana-sdk = "2.0"
 
-# Features Flags - Modular
+# V25 FEATURES - MODULAR!
 [features]
-default = ["database-postgres"]
+default = ["database-postgres", "quantum-crypto", "sharding"]
 database-postgres = ["sea-orm/sqlx-postgres", "sqlx/postgres"]
 database-sqlite = ["sea-orm/sqlx-sqlite", "sqlx/sqlite"]
 p2p-quic = ["libp2p/quic"]
@@ -126,27 +140,34 @@ bridge-ethereum = ["ethers", "alloy"]
 bridge-solana = ["solana-sdk"]
 observability = ["opentelemetry", "opentelemetry-otlp"]
 
-[dependencies.bech32]
-version = "0.10"
+# 🔥 V25 NEW FEATURES
+quantum-crypto = ["pqcrypto-kyber1024", "pqcrypto-dilithium5", "ark-groth16"]
+sharding = []  # Internal sharding logic
+ai-validator = ["tch", "candle-core", "candle-nn"]
+zk-proofs = ["ark-groth16", "ark-bn254"]
 
-# Multiple Binaries
+# Multiple Binaries - V25 Enhanced
 [[bin]]
-name = "pi-supernode"
+name = "pi-supernode-v25"
 path = "src/main.rs"
 
 [[bin]]
-name = "pi-keygen"
+name = "pi-keygen-v25"
 path = "bin/pi-keygen.rs"
 
 [[bin]]
-name = "pi-wallet"
+name = "pi-wallet-v25"
 path = "bin/pi-wallet.rs"
 
 [[bin]]
-name = "pi-bridge"
+name = "pi-bridge-v25"
 path = "bin/pi-bridge.rs"
 
-# Dev Dependencies - Complete Testing
+[[bin]]
+name = "pi-shard-monitor"             # ← V25 NEW!
+path = "bin/pi-shard-monitor.rs"
+
+# Dev Dependencies
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
 serial_test = "3"
@@ -156,5 +177,9 @@ proptest = "1.4"
 criterion = { version = "0.5", features = ["html_reports"] }
 
 [[bench]]
-name = "v20_bench"
+name = "v25_quantum_bench"           # ← V25 benchmarks
+harness = false
+
+[[bench]]
+name = "sharding_bench"
 harness = false
