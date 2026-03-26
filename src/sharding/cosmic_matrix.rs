@@ -1,4 +1,4 @@
-//! src/sharding/cosmic_matrix.rs
+// src/sharding/cosmic_matrix.rs
 
 //! Pi Network v26 - COSMIC SHARDING MATRIX
 //! 32x32 = 1024 Shards | 100K TPS/Shard = 100M+ TPS Total
