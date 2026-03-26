@@ -1,0 +1,17 @@
+[protocol]
+version = 25
+name = "Quantum Consensus"
+
+[consensus]
+type = "qrc_v1"
+shards = 64
+block_time_target = 3
+tps_target = 10000
+
+[crypto]
+kyber_level = "1024"
+dilithium_level = "5"
+
+[ai]
+model_path = "models/validator-v1.onnx"
+enabled = true
