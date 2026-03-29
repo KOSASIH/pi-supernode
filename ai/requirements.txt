@@ -1,0 +1,40 @@
+# Core Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic-settings==2.1.0
+
+# Autonomous AI Agents
+langchain==0.0.350
+langchain-community==0.0.38
+langgraph==0.0.44
+crewai==0.30.11
+autogen==0.2.9
+
+# Advanced LLMs
+vllm==0.3.3
+transformers==4.36.0
+sentence-transformers==2.2.2
+torch==2.1.1
+accelerate==0.24.1
+
+# Vector DB & RAG
+chromadb==0.4.18
+faiss-cpu==1.7.4
+qdrant-client==1.7.0
+
+# Observability
+prometheus-fastapi-instrumentator==6.1.0
+prometheus-client==0.19.0
+opentelemetry-api==1.21.0
+opentelemetry-exporter-otlp==1.21.0
+slowapi==0.1.9
+
+# Async & Queue
+celery==5.3.4
+redis==5.0.1
+aiohttp==3.9.1
+
+# Security & Utils
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+httpx==0.25.2
