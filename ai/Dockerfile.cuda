@@ -1,0 +1,24 @@
+# Dockerfile.cuda - NVIDIA GPU Support
+FROM --platform=linux/arm64/v8 nvcr.io/nvidia/pytorch:23.10-py3 AS base
+
+WORKDIR /app
+
+# Install system deps
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy & install Python deps with CUDA
+COPY requirements.gpu.txt .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir -r requirements.gpu.txt
+
+# Copy app
+COPY . .
+RUN useradd -m -u 1000 aiuser && chown -R aiuser /app
+USER aiuser
+
+EXPOSE 8000
+CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--workers", "1"]
