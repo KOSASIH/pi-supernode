@@ -1,0 +1,17 @@
+# docker-compose.gpu.yml
+services:
+  ai-gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile.cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+    ports:
+      - "8000:8000"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
