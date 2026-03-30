@@ -56,4 +56,3 @@ describe('Blockchain Components Tests', function() {
 if (require.main === module) {
     require('mocha').run();
 }
-
