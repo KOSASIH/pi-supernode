@@ -60,4 +60,3 @@ describe('Integration Tests', function() {
 if (require.main === module) {
     require('mocha').run();
 }
-
