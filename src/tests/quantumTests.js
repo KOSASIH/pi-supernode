@@ -37,4 +37,3 @@ describe('Quantum Encryption Tests', function() {
 if (require.main === module) {
     require('mocha').run();
 }
-
