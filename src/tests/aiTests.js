@@ -62,4 +62,3 @@ describe('AI Model Tests', function() {
 if (require.main === module) {
     require('mocha').run();
 }
-
