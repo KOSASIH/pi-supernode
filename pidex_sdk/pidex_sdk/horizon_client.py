@@ -197,4 +197,3 @@ async def demo_horizon_client():
 
 if __name__ == "__main__":
     asyncio.run(demo_horizon_client())
-
