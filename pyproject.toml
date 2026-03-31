@@ -1,0 +1,218 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pidex-sdk"
+dynamic = ["version"]
+description = "PiDex SDK - Pi Network Supernode + Stellar DEX Client"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "PiDex Team", email = "dev@pidex.network"}
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP",
+    "Typing :: Typed"
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.5.0",
+    "httpx[http2]>=0.27.0",
+    "stellar-sdk>=10.0.0",
+    "cryptography>=42.0.0",
+    "tenacity>=8.5.0",
+    "typing_extensions>=4.8.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "black>=24.0.0",
+    "ruff>=0.3.0",
+    "mypy>=1.8.0",
+    "httpx[http2]",
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0"
+]
+stellar = [
+    "stellar-sdk>=10.0.0",
+    "httpx[http2]>=0.27.0"
+]
+supernode = [
+    "grpcio>=1.60.0",
+    "grpcio-tools>=1.60.0"
+]
+full = [
+    "pidex-sdk[dev,stellar,supernode]"
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/KOSASIH/pi-supernode/tree/main/pidex_sdk"
+Documentation = "https://pidex.network/docs"
+Repository = "https://github.com/KOSASIH/pi-supernode.git"
+"Release Notes" = "https://github.com/KOSASIH/pi-supernode/releases"
+
+[project.scripts]
+pidex = "pidex_sdk.cli:main"
+
+[tool.hatch.version]
+path = "src/pidex_sdk/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/README.md", "/LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pidex_sdk"]
+
+# ========================================
+# 🧪 TESTING CONFIGURATION
+# ========================================
+[tool.pytest.ini_options]
+minversion = "7.4"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--asyncio-mode=auto",
+    "-v",
+    "--cov=src/pidex_sdk",
+    "--cov-report=html",
+    "--cov-report=term-missing"
+]
+testpaths = ["tests"]
+markers = [
+    "stellar: Stellar DEX tests (requires internet)",
+    "supernode: Pi supernode tests",
+    "slow: Slow integration tests"
+]
+asyncio_max_concurrency = 10
+
+[tool.coverage.run]
+source = ["src/pidex_sdk"]
+omit = ["*/tests/*", "*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:"
+]
+fail_under = 92
+
+# ========================================
+# 🎨 CODE QUALITY
+# ========================================
+[tool.black]
+target-version = ['py310']
+include = '\.pyi?$'
+line-length = 100
+skip-string-normalization = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = [
+    "E", "F", "W", "I", "UP",  # Pyflakes, pycodestyle, warnings, isort, pyupgrade
+    "B", "Q",                   # flake8-bugbear, flake8-quotes
+    "S", "T20",                 # bandit, flake8-print
+    "TID", "TCH", "TJ",         # flake8-tidy-imports, flake8-comprehensions, flake8-toosimple
+    "ARG", "PTH", "ERA",        # flake8-unused-arguments, pathlib, eradicate
+    "PD", "PGH", "PIE", "PL",   # Pydantic, pygrep-hooks, flake8-pie, pytest
+    "NPY", "PDM", "C4", "NNN",  # NumPy, pandas, comprehensions, naming
+    "SIM", "ASYNC",             # Perflint, async
+]
+ignore = [
+    "E501",  # line too long (black handles)
+    "B008",  # Do not perform lambda assignment (allow for decorators)
+]
+
+[tool.ruff.mccabe]
+max-complexity = 12
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "stellar_sdk.*",
+    "httpx.*",
+    "grpc.*"
+]
+ignore_missing_imports = true
+
+# ========================================
+# 📚 DOCUMENTATION
+# ========================================
+[tool.mkdocs]
+docs_dir = "docs"
+
+[tool.mkdocs.plugins]
+mkdocstrings = {
+    "handlers": {
+        "python": {
+            "options": {
+                "show_source": true,
+                "show_signature_annotations": true,
+                "members_order": "source"
+            }
+        }
+    }
+}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pidex_sdk*"]
+
+# ========================================
+# 🔒 SECURITY & DEPENDENCY SCANNING
+# ========================================
+[tool.meltano]
+plugins = {
+    "safety": {
+        "pip_url": "pip://safety",
+        "config": {
+            "full-test": true,
+            "ignore-vuln": "no-known-vuln"
+        }
+    }
+}
+
+[tool.check-wheel-contents]
+# Enforce source/package purity
+dist-info-only = false
+
+[tool.hatch.envs.default]
+dependencies = [
+    "hatchling",
+    "ruff>=0.3.0"
+]
+
+[tool.hatch.envs.default.scripts]
+fmt = "ruff check --fix --exit-zero"
+lint = "ruff check"
+lint-cov = "ruff check --output-format=github --exit-zero"
+mypy = "mypy src tests"
+mypy-report = "mypy src --html-report mypy_html"
+check = ["fmt", "lint", "mypy"]
