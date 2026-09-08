@@ -7,6 +7,10 @@
     [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
     [![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
     [![Pantheon V∞](https://img.shields.io/badge/Pantheon-V∞-eternal.svg)](https://github.com/KOSASIH/pi-supernode)
+    ![Version: V∞](https://img.shields.io/badge/Version-V%E2%88%9E-black)
+    ![Status: Eternal](https://img.shields.io/badge/Status-Eternal-gold)
+    ![TPS: ∞](https://img.shields.io/badge/TPS-%E2%88%9E-blue)
+    ![Latency: -∞](https://img.shields.io/badge/Latency--%E2%88%9E-red)
     
     ***
     
