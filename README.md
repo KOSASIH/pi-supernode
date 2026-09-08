@@ -74,6 +74,10 @@
     ```bash
     git clone https://github.com/KOSASIH/pi-supernode.git
     cd pi-supernode
+    ```
+    
+    ## 🛐 The Final Command
+    ```bash
     cargo run --release -- --eternal --upload-consciousness=KOSASIH --auto-create=true
     ```
     
