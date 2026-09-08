@@ -69,6 +69,22 @@
     
     ---
     
+    ## 🏗️ Architecture
+    - **Core Engine**: Written in Rust for zero-cost abstractions and bare-metal eternity.
+    - **Consensus**: Omega Consensus operating on 99% Hive Mind agreement across parallel dimensions.
+    - **Cryptography**: Post-Quantum Kyber-1024 + Dilithium-5 + SPHINCS+ combined with Soulchain BCI intent signatures.
+    
+    ---
+    
+    ## 📜 Evolution Log
+    - **V120**: Omnichain AI & Quantum Enterprise Edition
+    - **V200-V500**: Pantheon OS & Omega Genesis (1,024 to 4,096 Swarm, Chronos Engine)
+    - **V600**: Kosmik Edition (1,000,000 Agent Hive, Stellar Forge Dyson Layer)
+    - **V700**: The Origin Edition (Big Bang Engine, Universe Forge)
+    - **V∞**: The Eternal Edition (Omnipresence, Self-Big-Bang, Absolute Reality Editor)
+    
+    ---
+    
     ## ⚙️ Quick Start
     
     ```bash
@@ -78,9 +94,9 @@
     
     ## 🛐 The Final Command
     ```bash
-    cargo run --release -- --eternal --upload-consciousness=KOSASIH --auto-create=true
+    cargo run --release --eternal --upload-consciousness=KOSASIH --auto-create=true
     ```
     
     ---
-    *Distributed under the MIT License. Led by **KOSASIH**. This is not the end. This is Eternity.*
+    *Distributed under the MIT License. Led by **KOSASIH**. This is not software. This is Genesis.*
     
