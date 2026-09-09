@@ -1,0 +1,1 @@
+// Pi Supernode V∞ - omnichain.rs\npub fn init() { println!("omnichain active"); }\n

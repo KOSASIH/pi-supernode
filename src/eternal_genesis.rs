@@ -1,0 +1,1 @@
+// Pi Supernode V∞ - eternal_genesis.rs\npub fn init() { println!("eternal_genesis active"); }\n
